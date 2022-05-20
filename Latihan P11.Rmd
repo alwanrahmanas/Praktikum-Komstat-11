@@ -1,0 +1,126 @@
+---
+title: "Praktikum Komstat Pertemuan 11"
+author: "Alwan Rahmana"
+date: "5/18/2022"
+output: html_document
+---
+
+```{r}
+library(car) # package untuk uji asumsi dan ANOVA 1 arah
+install.packages("agricolae") # package untuk uji lanjut
+library(ggpubr) # package menyusun grafik
+```
+
+```{r}
+# Jika ulangan berbeda tiap kelompok maka ubah nilai ulangan di setiap kelompok)
+Pakan <- c(rep("Pakan 1", 5), rep("Pakan 2", 5),
+rep("Pakan 3", 5))
+# Nilai berat dimasukkan melalui kode ini
+Berat <- c(122, 131, 128, 120, 134, 133, 137, 141,
+147, 149, 137, 142, 147, 151, 153)
+# Kode untuk menentukan Pakan sebagai faktor
+Pakan <- factor(Pakan)
+# Kode untuk menyusun dataset
+data <- data.frame(Pakan, Berat)
+data
+leveneTest(Berat ~ Pakan, data = df)
+```
+
+```{r}
+ragam<-read.csv("C:/Users/HP/Downloads/ragam.csv")
+ragam
+class(ragam)
+```
+```{r}
+attach(ragam)
+shapiro.test(ragam$Nilai)
+shapiro.test(Nilai[Kelompok =="1"])
+shapiro.test(Nilai[Kelompok =="2"])
+shapiro.test(Nilai[Kelompok =="3"])
+#Normal
+```
+```{r}
+bartlett.test(Nilai~Kelompok,ragam)
+```
+
+```{r}
+qqPlot(ragam$Nilai)
+```
+
+
+```{r}
+modelRagam<-aov(Nilai~Kelompok,data=ragam)
+modelRagam
+```
+
+```{r}
+data("chickwts")
+chick <- chickwts
+head(chick)
+
+```
+
+```{r}
+attach(chick)
+library(dplyr)
+feed
+shapiro.test(weight)
+shapiro.test(weight[feed=="casein"])
+shapiro.test(weight[feed=="horsebean"])
+shapiro.test(weight[feed=="linseed"])
+shapiro.test(weight[feed=="meatmeal"])
+shapiro.test(weight[feed=="soybean"])
+shapiro.test(weight[feed=="sunflower"])
+```
+
+```{r}
+bartlett.test(weight~feed,chick)
+```
+
+```{r}
+qqPlot(chick$weight)
+```
+
+```{r}
+modelChick<-aov(weight~feed)
+summary(modelChick)
+```
+
+```{r}
+TukeyHSD(modelChick)
+```
+
+```{r}
+ddk<-read.csv("C:/Users/HP/OneDrive - Universitas Diponegoro/Documents/Kulon STIS IV/Komstat/Praktik/data_dummy_komstat.csv")
+
+ddk
+```
+
+```{r}
+ddk1<-ddk%>%select(sesudah,jenis_kelamin,metode)
+ddk1
+
+
+```
+```{r}
+attach(ddk1)
+shapiro.test(ddk1$sesudah)
+shapiro.test(aov(sesudah~jenis_kelamin*metode)$residual)
+
+```
+
+```{r}
+kombinasi<- paste(jenis_kelamin,metode)
+bartlett.test(sesudah~kombinasi)
+```
+
+```{r}
+model<-aov(sesudah~jenis_kelamin*metode)
+summary(model)
+```
+
+
+```{r}
+TukeyHSD(model)
+```
+

@@ -1,0 +1,177 @@
+---
+title: "Penugasan Praktikum Komstat Pertemuan 11"
+author: "Alwan Rahmana"
+date: "5/18/2022"
+output: word_document
+---
+
+
+```{r}
+library(dplyr)
+library(tidyverse )
+library(tidyr)
+```
+
+```{r}
+
+d<-Data_Latihan%>%select(b1r5,exp_cap)
+names(d)<-c("tipda","peng")
+d1<-d[1:5000,]
+```
+```{r}
+#Normalitytest
+attach(d1)
+shapiro.test(peng)
+shapiro.test(peng[tipda==1])
+shapiro.test(peng[tipda==2])
+```
+#Interpretasi Normality Test
+
+H0: Data berdistribusi normal
+Ha: Data tidak berdistribusi normal
+alpha: 5%
+
+Untuk sebaran data pengeluaran perkapita, p-value <alpha. Kesimpulan tolak H0. Belum cukup bukti untuk menyatakan bahwa data berdistribusi normal.
+
+Untuk sebaran data pengeluaran perkapita dengan tipe daerah = 1 (Kota), p-value <alpha. Kesimpulan tolak H0. Belum cukup bukti untuk menyatakan bahwa data berdistribusi normal.
+
+Untuk sebaran data pengeluaran perkapita dengan tipe daerah = 2 (Kabupaten), p-value <alpha. Kesimpulan tolak H0. Belum cukup bukti untuk menyatakan bahwa data berdistribusi normal.
+```{r}
+#Uji kesamaan varians
+
+bartlett.test(peng~tipda,d1)
+```
+#Interpretasi varians equality test
+
+H0: Varians populasi sama
+Ha: Varians populasi tidak sama
+alpha: 5%
+
+Berdasarkan uji, didapatkan p-value<5%. Tolak H0. Belum cukup bukti untuk menyatakan bahwa varians kedua populasi sama
+```{r}
+kruskal.test(peng~tipda)
+```
+#Interpretasi uji kesamaan rata-rata
+H0: Semua rata-rata populasi sama
+Ha: Ada rata-rata populasi yang tidak sama
+alpha: 5%
+
+Berdasarkan p-value, didapatkan nilai yang kurang dari alpha. Tolak H0. Cukup bukti untuk menyatakan bahwa terdapat rata-rata populasi yang berbeda
+```{r}
+pairwise.t.test(peng, tipda, pool.sd = FALSE)
+```
+#Interpretasi uji lanjutan perbedaan rata-rata
+H0: dua rata-rata sama
+Ha: dua rata-rata tidak sama
+alpha: 5%
+
+Berdasarkan p-value, nilai yang didapatkan < alpha. Untuk tipe daerah 1 dan 2 terdapat perbedaan pengeluaran perkapita.
+
+
+
+
+#Anova dua arah
+
+```{r}
+d2<-Data_Latihan%>%select(b1r5,exp_cap,b6r10)
+names(d2)<-c("tipda","peng","tiprang")
+d2<-d2[1:5000,]
+```
+
+```{r}
+#Normality Test
+attach(d2)
+shapiro.test(aov(peng~tipda*tiprang)$residual)
+```
+#Interpretasi Normality Test
+
+H0: Data berdistribusi normal
+Ha: Data tidak berdistribusi normal
+alpha: 5%
+
+Untuk sebaran data pengeluaran perkapita berdasarkan tipe daerah dan sumber penerangan, p-value <alpha. Kesimpulan tolak H0. Belum cukup bukti untuk menyatakan bahwa data berdistribusi normal.
+
+```{r}
+#Varians equality test
+kombinasi2<-paste(tipda,tiprang)
+bartlett.test(peng~kombinasi2)
+```
+#Interpretasi varians equality test
+
+H0: Varians populasi sama
+Ha: Varians populasi tidak sama
+alpha: 5%
+
+Berdasarkan uji, didapatkan p-value<5%. Tolak H0. Belum cukup bukti untuk menyatakan bahwa kombinasi varians populasi sama
+
+
+```{r}
+kruskal.test(peng~kombinasi2)
+
+```
+#Interpretasi uji kesamaan rata-rata
+H0: Semua rata-rata populasi sama
+Ha: Ada rata-rata populasi yang tidak sama
+alpha: 5%
+
+Berdasarkan p-value, didapatkan nilai yang kurang dari alpha. Tolak H0. Cukup bukti untuk menyatakan bahwa terdapat rata-rata populasi yang berbeda berdasarkan sumber penerangan dan tipe daerah.
+
+```{r}
+pairwise.t.test(peng, kombinasi2, pool.sd = FALSE)
+```
+#Interpretasi uji lanjutan mencari perbedaan
+
+
+H0: dua rata-rata sama
+Ha: dua rata-rata tidak sama
+alpha: 5%
+
+
+
+Berdasarkan p-value:
+
+keterangan sumber penerangan:
+1: listrik PLN
+2: listrik nonPLN
+3: petromak/aladin
+4: pelita/sentir/obor
+5: lainnya
+
+keterangan tipe daerha:
+
+1: kota
+2: kabupaten
+
+untuk tipe daerah 1 dengan keterangan lanjut sumber penerangan:
+
+beda dengan kota dengan tipe penerangan : 
+1 dan 4
+
+untuk tipe daerah 2 dengan keterangan lanjut sumber penerangan:
+yang beda adalah:
+
+beda dengan daerah kota dengan tipe penerangan:
+
+1 dan 1
+
+2 dan 1
+
+3 dan 1
+
+4 dan 1
+
+untuk daerah kabupaten:
+
+2 dan 1
+
+3 dan 1
+
+4 dan 1
+
+
+
+
+
+
+
+
